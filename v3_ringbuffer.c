@@ -97,7 +97,7 @@ void ring_buffer_init()
         spacesem = sem_open("ring_space_protect", O_CREAT, 0700, NUM_OF_RING);
 #else
         spacesem = &g_spacesem;
-        sem_init(g_spacesem, 0, 0);
+        sem_init(spacesem, 0, 0);
 #endif
 
         log_file = fopen(FILE_NAME,"w");
@@ -110,7 +110,7 @@ void enqueue(void *value)
         pthread_mutex_lock(&ring_lock);
         
         r = &g_bodies[ring_body_idx];
-        r->cell[r->writer_idx++] = *(struct ringbuff_cell *)value;
+        r->cell[GET_RINGBUFF_CELL_IDX(r->writer_idx++)] = *(struct ringbuff_cell *)value;
 
         if (r->writer_idx == NUM_OF_CELL) {
             (spacesem);
