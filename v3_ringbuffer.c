@@ -115,7 +115,8 @@ void enqueue(void *value)
         if (r->writer_idx == NUM_OF_CELL) {
             (spacesem);
             g_ring = r;
-            ring_body_idx = (++ring_body_idx) & NUM_OF_RING;
+            ++ring_body_idx;
+            ring_body_idx = ring_body_idx & NUM_OF_RING;
             sem_post(spacesem);
         }
         pthread_mutex_unlock(&ring_lock);
@@ -127,7 +128,7 @@ void* dequeue(void)
         pthread_mutex_lock(&ring_lock);
         for (cell_idx = 0; cell_idx < g_ring->writer_idx; cell_idx++)
         {
-            struct ringbuff_cell *cell = &g_ring->cell[cell_idx];
+            struct ringbuff_cell *cell = &g_ring->cell[GET_RINGBUFF_CELL_IDX(cell_idx)];
 
             fprintf(log_file,"%ld.%9ld, %d\n", (long)cell->timestamp.tv_sec 
                                          , cell->timestamp.tv_nsec
