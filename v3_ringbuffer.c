@@ -112,7 +112,7 @@ void enqueue(void *value)
         r = &g_bodies[ring_body_idx];
         r->cell[GET_RINGBUFF_CELL_IDX(r->writer_idx++)] = *(struct ringbuff_cell *)value;
 
-        if (r->writer_idx == NUM_OF_CELL) {
+        if (GET_RINGBUFF_CELL_IDX(r->writer_idx) == NUM_OF_CELL) {
             (spacesem);
             g_ring = r;
             ++ring_body_idx;
@@ -126,9 +126,9 @@ void* dequeue(void)
 {
         uint32_t cell_idx;
         pthread_mutex_lock(&ring_lock);
-        for (cell_idx = 0; cell_idx < g_ring->writer_idx; cell_idx++)
+        for (cell_idx = 0; cell_idx < GET_RINGBUFF_CELL_IDX(g_ring->writer_idx); cell_idx++)
         {
-            struct ringbuff_cell *cell = &g_ring->cell[GET_RINGBUFF_CELL_IDX(cell_idx)];
+            struct ringbuff_cell *cell = &g_ring->cell[cell_idx];
 
             fprintf(log_file,"%ld.%9ld, %d\n", (long)cell->timestamp.tv_sec 
                                          , cell->timestamp.tv_nsec
