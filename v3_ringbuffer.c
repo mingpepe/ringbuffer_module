@@ -116,7 +116,7 @@ void enqueue(void *value)
             (spacesem);
             g_ring = r;
             ++ring_body_idx;
-            ring_body_idx = ring_body_idx & NUM_OF_RING;
+            ring_body_idx &= NUM_OF_RING;
             sem_post(spacesem);
         }
         pthread_mutex_unlock(&ring_lock);
